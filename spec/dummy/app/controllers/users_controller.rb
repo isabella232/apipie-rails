@@ -289,6 +289,14 @@ class UsersController < ApplicationController
   def create_route
   end
 
+  api! 'Create user example'
+  param :bulk_user, :bulk do
+    param :name, String
+    param :email, String
+  end
+  def create_bulk_users
+  end
+
   api :GET, '/users/action_with_headers'
   header :RequredHeaderName, 'Required header description', required: true
   header :OptionalHeaderName, 'Optional header description', required: false, type: 'string'

@@ -651,8 +651,7 @@ EOS2
     end
   end
 
-  describe "param description" do
-
+  describe "params" do
     it "should contain all specified information" do
       a = Apipie.get_method_description(UsersController, :show)
 
@@ -688,6 +687,39 @@ EOS2
       expect(param.validator.class).to be(Apipie::Validator::TypeValidator)
     end
 
+    it "bulk validator should parse sub params into json" do
+      a = Apipie.get_method_description(UsersController, :create_bulk_users)
+      param = a.params[:bulk_user]
+      sub_params = param.to_json[:params]
+      expect(param.validator.class).to be(Apipie::Validator::BulkValidator)
+      expect(sub_params.count).to be(2)
+      expect(sub_params.first[:name]).to eq("name")
+      expect(sub_params.second[:name]).to eq("email")
+    end
+
+    it "bulk param always returns true when sub param is incorrect" do
+      expect {
+        post :create_bulk_users, :params => { :bulk_user => [{ :name => "root", :email => 12345 }]}
+      }.not_to raise_error
+    end
+
+    it "bulk param always returns true when sub param is missing" do
+      expect {
+        post :create_bulk_users, :params => { :bulk_user => [{ :name => "root" }]}
+      }.not_to raise_error
+    end
+
+    it "bulk param always returns true when sub param is not defined" do
+      expect {
+        post :create_bulk_users, :params => { :bulk_user => [{ :abc => "root" }]}
+      }.not_to raise_error
+    end
+
+    it "bulk param always returns true when param is not an array" do
+      expect {
+        post :create_bulk_users, :params => { :bulk_user => "abc"}
+      }.not_to raise_error
+    end
   end
 
   describe "ignored option" do

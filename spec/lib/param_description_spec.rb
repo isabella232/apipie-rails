@@ -325,6 +325,27 @@ describe Apipie::ParamDescription do
 
     end
 
+    context 'with BulkValidator' do
+      subject do
+        Apipie::ParamDescription.new(method_desc, :param, :bulk) do
+          param :question, String
+        end
+      end
+
+      it 'should include the nested params in the json' do
+        sub_params = subject.to_json[:params]
+        expect(sub_params.size).to eq(1)
+        sub_param = sub_params.first
+        expect(sub_param[:name]).to eq('question')
+        expect(sub_param[:full_name]).to eq('param[question]')
+        expect(sub_param[:expected_type]).to eq('string')
+      end
+
+      it 'should always return true' do
+        expect { subject.validate(2) }.not_to raise_error
+      end
+    end
+
     context 'with flat validator' do
 
       subject do
