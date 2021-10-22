@@ -6,15 +6,22 @@ module Apipie
 
       VALIDATOR_TYPE = :bulk
 
-      def initialize(param_description, block)
-        raise ArgumentError, 'A block must be provided' unless block.present? && block.is_a?(Proc)
-
+      def initialize(param_description, items_argument, options = {}, block)
         super(param_description)
 
-        @proc = block
+        items_param_description = Apipie::ParamDescription.new(
+          param_description.method_description,
+          param_description.name,
+          items_argument,
+          nil,
+          &block
+        )
+        @validator = items_param_description.validator
         @type = :bulk
+      end
 
-        instance_exec(&@proc)
+      def params_ordered
+        @validator.params_ordered
       end
 
       def validate(_value)
@@ -22,12 +29,10 @@ module Apipie
         true
       end
 
-      def process_value(value); end
-
-      def self.build(param_description, argument, _options, block)
+      def self.build(param_description, argument, options, block)
         return unless argument == VALIDATOR_TYPE && block.is_a?(Proc) && block.arity <= 0
 
-        new(param_description, block)
+        new(param_description, Hash, options, block)
       end
 
       def expected_type
@@ -35,7 +40,11 @@ module Apipie
       end
 
       def description
-        'Must be a bulk type for bulk params'
+        'bulk must be an Array of Hash'
+      end
+
+      def items_validator
+        @validator
       end
     end
   end

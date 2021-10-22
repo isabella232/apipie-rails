@@ -10,6 +10,11 @@ Dummy::Application.routes.draw do
           post :create_route
         end
       end
+      resources :users do
+        collection do
+          post :create_bulk_users
+        end
+      end
       resources :concerns, :only => [:index, :show]
       namespace :files do
         get '/*file_path', format: false, :action => 'download'
