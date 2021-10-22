@@ -494,16 +494,6 @@ module Apipie
                               else
                                 { type: 'string' }
                               end
-      when 'bulk'
-        swagger_def[:items] = {
-                                '$ref' => gen_referenced_block_from_params_array(
-                                  ref_name_from_param_desc(param_desc),
-                                  param_desc.validator.param_description.validator.params_ordered,
-                                  allow_nulls
-                                )
-                                }
-
-
       when 'enum'
         swagger_def[:type] = 'string'
         swagger_def[:enum] = param_desc.validator.values

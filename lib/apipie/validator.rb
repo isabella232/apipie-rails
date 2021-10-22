@@ -27,11 +27,7 @@ module Apipie
       # find the right validator for given options
       def self.find(param_description, argument, options, block)
         @validators.each do |validator_type|
-          validator = if validator_type == Validator::HashValidator
-                        validator_type.build(param_description, argument, options, block)
-                      else
-                        validator_type.build(param_description, argument, options, block)
-                      end
+          validator = validator_type.build(param_description, argument, options, block)
           return validator if validator
         end
         return nil
