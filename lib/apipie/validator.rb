@@ -25,10 +25,10 @@ module Apipie
       end
 
       # find the right validator for given options
-      def self.find(param_description, argument, options, block, always_valid: false)
+      def self.find(param_description, argument, options, block)
         @validators.each do |validator_type|
           validator = if validator_type == Validator::HashValidator
-                        validator_type.build(param_description, argument, options, block, always_valid: always_valid)
+                        validator_type.build(param_description, argument, options, block)
                       else
                         validator_type.build(param_description, argument, options, block)
                       end
@@ -337,15 +337,14 @@ module Apipie
       include Apipie::DSL::Base
       include Apipie::DSL::Param
 
-      def self.build(param_description, argument, options, block, always_valid: false)
-        self.new(param_description, block, options[:param_group], always_valid) if block.is_a?(Proc) && block.arity <= 0 && argument == Hash && options[:of].blank?
+      def self.build(param_description, argument, options, block)
+        self.new(param_description, block, options[:param_group]) if block.is_a?(Proc) && block.arity <= 0 && argument == Hash && options[:of].blank?
       end
 
-      def initialize(param_description, argument, param_group, always_valid)
+      def initialize(param_description, argument, param_group)
         super(param_description)
         @proc = argument
         @param_group = param_group
-        @always_valid = always_valid
         self.instance_exec(&@proc)
         # specifying action_aware on Hash influences the child params,
         # not the hash param itself: assuming it's required when
@@ -365,7 +364,6 @@ module Apipie
       end
 
       def validate(value)
-        return true if @always_valid
         return false if !value.is_a? Hash
         if @hash_params
           @hash_params.each do |k, p|

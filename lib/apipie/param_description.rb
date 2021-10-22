@@ -16,14 +16,13 @@ module Apipie
     alias_method :request_only?, :request_only
     alias_method :is_array?, :is_array
 
-    def self.from_dsl_data(method_description, args, always_valid: false)
+    def self.from_dsl_data(method_description, args)
       param_name, validator, desc_or_options, options, block = args
       Apipie::ParamDescription.new(method_description,
                                    param_name,
                                    validator,
                                    desc_or_options,
                                    options,
-                                   always_valid,
                                    &block)
     end
 
@@ -40,7 +39,7 @@ module Apipie
       end
     end
 
-    def initialize(method_description, name, validator, desc_or_options = nil, options = {}, always_valid = false, &block)
+    def initialize(method_description, name, validator, desc_or_options = nil, options = {}, &block)
 
       if desc_or_options.is_a?(Hash)
         options = options.merge(desc_or_options)
@@ -91,7 +90,7 @@ module Apipie
           options.merge!(rest_of_options.select{|k,v| k != :array_of })
           raise "an ':array_of =>' validator is allowed exclusively on response-only fields" unless @response_only
         end
-        @validator = Validator::BaseValidator.find(self, validator, @options, block, always_valid: always_valid)
+        @validator = Validator::BaseValidator.find(self, validator, @options, block)
         raise "Proc validators not supported on param #{method_description.id}:#{name}" if (@validator.is_a? Validator::ProcValidator) && @response_only
         raise "Validator for #{validator} not found." unless @validator
       end

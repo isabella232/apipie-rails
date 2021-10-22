@@ -4,7 +4,6 @@ module Apipie
       include Apipie::DSL::Base
       include Apipie::DSL::Param
 
-      ITEMS_OPTIONS_EXCLUDE = %i[of array_of desc].freeze
       VALIDATOR_TYPE = :bulk
 
       def initialize(param_description, items_argument, options = {}, block)
@@ -15,8 +14,6 @@ module Apipie
           param_description.name,
           items_argument,
           nil,
-          options.reject { |k, _| ITEMS_OPTIONS_EXCLUDE.include?(k) },
-          true,
           &block
         )
         @validator = items_param_description.validator
@@ -35,8 +32,7 @@ module Apipie
       def self.build(param_description, argument, options, block)
         return unless argument == VALIDATOR_TYPE && block.is_a?(Proc) && block.arity <= 0
 
-        items_argument = options.fetch(:of, Hash)
-        new(param_description, items_argument, options, block)
+        new(param_description, Hash, options, block)
       end
 
       def expected_type
