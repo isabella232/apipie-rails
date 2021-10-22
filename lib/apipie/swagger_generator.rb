@@ -317,7 +317,8 @@ module Apipie
         date: SwaggerTypeWithFormat.new('string', 'date'),
         dateTime: SwaggerTypeWithFormat.new('string', 'date-time'),
         password: SwaggerTypeWithFormat.new('string', 'password'),
-        oneOf: SwaggerTypeWithFormat.new('oneOf', nil)
+        oneOf: SwaggerTypeWithFormat.new('oneOf', nil),
+        bulk: 'array'
       }
     end
 
