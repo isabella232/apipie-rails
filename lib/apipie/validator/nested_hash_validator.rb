@@ -20,7 +20,7 @@ module Apipie
 
       def validate(value)
         value ||= {}
-        return false if value.class != Hash
+        return false unless value.is_a? Hash
 
         value.values.all? do |child|
           @validator.validate(child)
