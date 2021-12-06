@@ -572,7 +572,7 @@ module Apipie
                                              end
       end
 
-      if param_desc.is_array?
+      if param_desc.is_array? || swagger_def[:type] == "bulk"
         new_swagger_def = {
           items: swagger_def,
           type: 'array'
