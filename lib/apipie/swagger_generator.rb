@@ -495,6 +495,7 @@ module Apipie
                                 { type: 'string' }
                               end
       when 'bulk'
+        swagger_def[:type] = "array"
         swagger_def[:items] = {
           '$ref' => gen_referenced_block_from_params_array(
             ref_name_from_param_desc(param_desc),
@@ -572,7 +573,7 @@ module Apipie
                                              end
       end
 
-      if param_desc.is_array? || swagger_def[:type] == "bulk"
+      if param_desc.is_array?
         new_swagger_def = {
           items: swagger_def,
           type: 'array'
